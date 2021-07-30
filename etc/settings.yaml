@@ -1,0 +1,9 @@
+---
+
+db:
+  postgress:
+    db_name: Cargamos_Inventory
+    db_usr: POSTGRES_USER
+    db_pwd: POSTGRES_PWD
+    db_port: 5432
+    db_host: localhost
