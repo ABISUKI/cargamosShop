@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-__all__ = ["dep"]
+__all__ = ["dep", "deb"]
