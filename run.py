@@ -2,8 +2,6 @@
 import app
 from lib.dep import*
 from app.views import app
-print("Hello Starting applicationnn")
-
 
 
 host_name = socket.gethostname()
