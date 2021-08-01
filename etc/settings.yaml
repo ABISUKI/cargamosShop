@@ -7,3 +7,21 @@ db:
     db_pwd: POSTGRES_PWD
     db_port: 5432
     db_host: localhost
+
+queries:
+  add_shop: INSERT INTO shops (id, name, address, city, country, state, phone, schedule, warehouse)
+            VALUES ((SELECT MAX(id)+1 FROM shops), %s, %s,%s, %s ,%s, %s, %s, %s);
+  
+  add_product: INSERT INTO products_el (id, type, model, brand, status, color, extra, sku, class, warehouse)
+               VALUES ((SELECT MAX(id)+1 FROM products_el), %s,%s, %s,%s, %s ,%s, %s, %s, %s);
+  test: SELECT * FROM products_el;
+  get_shop: SELECT name, address, city, country,state, phone, schedule, warehouse FROM shops WHERE name = '{}';
+  get_shops: SELECT name, address, city, country,state, phone, schedule, warehouse FROM shops;
+
+definition_type:
+  product_class:
+    - EL  #ELECTRONIC
+    - SP  #SPORTS
+    - FT  #FOOTWEAR
+  product_type: [PHONE, TV, HEADPHONES, BALLS, HELMET, SNIKERS, BOOTS]
+  brand_type: [SAMMSUNG, HUAWEI, ASUS, NIKE, ADIDAS, CATERPILLAR]

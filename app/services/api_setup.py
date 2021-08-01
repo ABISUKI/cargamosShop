@@ -24,13 +24,10 @@ model_shop = api.model('Shop', {
 
 
 model_product = api.model('Product', {
-                          'type': fields.String(example="EL", required=True, description="EL = Electronic etc.."),
+                          'type': fields.String(example="Phone", required=True, description="Just existing types"),
                           'model': fields.String(example="P30 Lite", required=True),
                           'brand': fields.String(example="Huawei", required=True),
                           'color': fields.String(example="black", required=True),
-                          'class': fields.String(example="Samrt Phone", required=True),
+                          'class': fields.String(example="EL", required=True, description="EL = Electronic etc.."),
                           'warehouse': fields.String(example="A1", required=True, description="To assing to an existing warehouse/store"),
-                          'ram_memmory': fields.String(example="4", required=True),
-                          'int_memmory': fields.String(example="168", required=True)})
-
-#'status': fields.boolean(example="Guadalajara", required=False),
+                          'extra': fields.String(example="memmory 4rm-128", required=True)})

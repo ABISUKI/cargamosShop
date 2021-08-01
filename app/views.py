@@ -1,20 +1,12 @@
 # -*- coding: utf-8 -*-f
 
 from .services.api_setup import *
+from .utilities.tools import ResquestHanlder
 
-@api.route("/shops")
-class Shops(Resource):
-    
-    def get(self):
-        return {'get': 'method'}
+request_handler = ResquestHanlder()
 
-
-@api.route("/shop")
+@api.route("/shop/")
 class Shop(Resource):
-    def get(self):
-        return {'get': 'method'}
-    
-
     @api.expect(model_shop, validate=True)
     def post(self):
         maybe_json = request.get_json(silent=True, cache=False)
@@ -22,12 +14,13 @@ class Shop(Resource):
         print(type(maybe_json))
         return jsonify(maybe_json)
 
-
-
-@api.route("/products")
-class Products(Resource):
-    def get(self):
-        return {'get': 'method'}
+@api.route("/shop/<name>")
+class Shop(Resource):
+    @api.doc(params={'name': 'The shop name'})
+    def get(self, name):
+        if name == "all":
+            return request_handler.pull_shops_handler()
+        return request_handler.pull_shop_handler(name)
 
 
 @api.route("/product")
