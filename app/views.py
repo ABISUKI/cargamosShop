@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-f
 import os
-print(os.environ["POSTGRES_PWD"])
 from .services.api_setup import *
 from .utilities.tools import ResquestHanlder
 
