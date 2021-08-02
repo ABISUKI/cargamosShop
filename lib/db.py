@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import os
+
+
+import os
 import psycopg2
 from psycopg2 import pool
 from psycopg2.extensions import POLL_ERROR
@@ -15,8 +19,8 @@ class PostgresDB:
                                           maxconn=5,
                                           cursor_factory=DictCursor,
                                           database=auth["db"],
-                                          user=auth["usr"],
-                                          password=auth["pwd"],
+                                          user=os.environ[auth["usr"]],
+                                          password=os.environ[auth["pwd"]],
                                           host=auth["host"],
                                           port=auth["port"])
     
@@ -39,7 +43,7 @@ class PostgresDB:
 class CursorPool():
     """Get a cursor from a connection from pool of connections."""
 
-    def __init__(self, auth: dict):
+    def __init__(self):
         self.connection = None
         self._cursor = None
 

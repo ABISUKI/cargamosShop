@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
+from psycopg2 import IntegrityError
 from lib.db import PostgresDB, CursorPool
+from etc import SETTINGS
 
-auth = {'host': 'localhost',
-        'usr': 'postgres',
-        'port': '5432',
-        'pwd': 'cargamosShop',
-        'db': 'Cargamos_Inventory'}
 
-PostgresDB.initialize(auth)
+PostgresDB.initialize(auth=SETTINGS["db"]["postgress_auth"])
 
 class Transaction:
 
@@ -15,42 +12,27 @@ class Transaction:
         pass
 
     
-    def pull_shops(self, query):
-        with CursorPool(auth) as cursor:
+    def pull(self, query):
+        with CursorPool() as cursor:
             cursor.execute(query)
             columns = list(cursor.description)
             data = cursor.fetchall()
-            results = [dict(row) for row in data]
-        return results
+        return [dict(row) for row in data]
     
-
-    def pull_product(self, query):
-        with CursorPool(auth) as cursor:
-            cursor.execute(query)
-            columns = list(cursor.description)
-            data = cursor.fetchall()
-            response = [dict(row) for row in data]
-            print(response)
-
-
-    def insert_product(self):
-        pass
-
-
-    def update_product(self):
-        pass
+    def insert(self, query, values):
+        try:
+            with CursorPool() as cursor:
+                cursor.execute(query, values)
+                print("insertion succesfull")
+            return True, "New data registered"
+        
+        except (IntegrityError, Exception) as e:
+            if "duplicate key value violates" in str(e):
+                return False, "Shop/warehouse already exist"
+            return False, str(e)
 
     
-    def get_shop(self):
+    def update(self):
         pass
-
-
-    def insert_shop(self):
-        pass
-
-
-    def update_shop(self):
-        pass
-
 
 

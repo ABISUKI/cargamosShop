@@ -11,7 +11,7 @@ api = Api(app, title="DEMO", description="description", default_label='Shop Inve
 
 
 model_shop = api.model('Shop', {
-                       'name': fields.String(example="CragamosShop", required=True),
+                       'name': fields.String(example="cargamosShop", required=True),
                        'warehouse': fields.String(example="A1", required=True),
                        'address': fields.String(example="Av 12 #1854", required=True),
                        'city': fields.String(example="Guadalajara", required=True),
@@ -20,7 +20,7 @@ model_shop = api.model('Shop', {
                        'phone': fields.String(example="+5213325653908", required=True),
                        'opening_time': fields.String(example="08:30", required=True, description="Format 24h Opening hours"),
                        'closing_time': fields.String(example="22:00", required=True, description="Format 24h Closgin hours"),
-                       'not_working_days': fields.List(fields.String(example="monday"), required=True)})
+                       })
 
 
 model_product = api.model('Product', {
@@ -28,6 +28,8 @@ model_product = api.model('Product', {
                           'model': fields.String(example="P30 Lite", required=True),
                           'brand': fields.String(example="Huawei", required=True),
                           'color': fields.String(example="black", required=True),
+                          'status': fields.String(example="true", required=True),
                           'class': fields.String(example="EL", required=True, description="EL = Electronic etc.."),
                           'warehouse': fields.String(example="A1", required=True, description="To assing to an existing warehouse/store"),
+                          'shop': fields.String(example="cargamosShop", required=True),
                           'extra': fields.String(example="memmory 4rm-128", required=True)})
