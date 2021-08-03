@@ -4,3 +4,4 @@ PyYAML
 psycopg2
 pandas
 pytest
+requests
