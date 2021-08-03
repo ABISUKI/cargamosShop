@@ -30,6 +30,7 @@ class Transaction:
             return True, "New data registered"
 
         except (IntegrityError, Exception) as e:
+            print(e)
             if "duplicate key value violates" in str(e):
                 return False, "Shop/warehouse already exist"
             return False, str(e)

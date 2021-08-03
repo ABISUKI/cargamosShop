@@ -134,7 +134,7 @@ class ResquestHanlder(Transaction):
 
     def pull_product(self, sku: str) -> json:
         query = SETTINGS["queries"]["get_product"]
-        query = query = query.format(sku)
+        query = query.format(sku)
         results = self.pull(query)
         if results[0]:
             if len(results[1]):

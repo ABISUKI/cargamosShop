@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-
 from etc import SETTINGS
-import os
 import psycopg2
 from psycopg2 import pool
 from psycopg2.extensions import POLL_ERROR

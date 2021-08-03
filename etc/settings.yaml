@@ -3,12 +3,15 @@
 db:
   postgress_auth: {"db": Cargamos_Inventory, "usr": POSTGRES_USER, "pwd": "POSTGRES_PWD", "port": 5432, "host": "localhost"}
 
+
 queries:
   add_shop: INSERT INTO shops (id, {})
             VALUES ((SELECT MAX(id)+1 FROM shops), %s, %s,%s, %s ,%s, %s, %s, %s);
   
   add_product: INSERT INTO products_el (id, {})
                VALUES ((SELECT MAX(id)+1 FROM products_el), %s,%s, %s,%s, %s ,%s, %s, %s, %s, %s, %s);
+  add_product_test: INSERT INTO products_el (id, brand, class, color, extra, model, sku, status, type, shop, warehouse, idTime)
+                VALUES ((SELECT MAX(id)+1 FROM products_el), %s,%s, %s,%s, %s ,%s, %s, %s, %s, %s, %s);
   test: SELECT * FROM products_el;
   get_shop: SELECT name, address, city, country,state, phone, schedule, warehouse FROM shops WHERE name = '{}';
   get_shops: SELECT name, address, city, country,state, phone, schedule, warehouse FROM shops;
@@ -16,6 +19,7 @@ queries:
   get_shop_warehosue: SELECT name, address, city, country,state, phone, schedule, warehouse FROM shops WHERE warehouse = '{}';
   get_name_shops: SELECT name, warehouse FROM shops;
   update_product:  UPDATE products_el SET {} WHERE idTime = '{}';
+
 
 definition_type:
   product_class:
