@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-f
 import os
+import asyncio
 from .services.api_setup import *
 from .utilities.tools import ResquestHanlder
+from multiprocessing import Process
 
 request_handler = ResquestHanlder()
 
 
+pro = []
 @api.route("/shop/")
 class Shop(Resource):
     @api.expect(model_shop, validate=True)
     def post(self):
         json_response = request.get_json(silent=True, cache=False)
-        return request_handler.insert_shop(json_response)
+        response = request_handler.insert_shop(json_response)
+        return response
 
 
 @api.route("/shop/<name>")

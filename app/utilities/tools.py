@@ -1,13 +1,30 @@
 import calendar
 import operator
 import re
+import time
 import pandas as pd
 from datetime import datetime
 from threading import Timer
-from flask import json, jsonify
+from flask import json, jsonify, make_response
+from werkzeug.wrappers import response
 from .db_transaction import Transaction
 from etc import SETTINGS
 from typing import List, Tuple, Any
+
+
+class Responses:
+
+    @classmethod
+    def success_response(cls, data) -> json:
+        return make_response(jsonify({"Response": data, "error" : None}), 200)
+    
+    @classmethod
+    def fail_response(cls, error) -> json:
+        return make_response(jsonify({"Response": None, "error" : error}), 400)
+    
+    @classmethod
+    def server_error_response(cls, error) -> json:
+        return make_response(jsonify({"Response": None, "error" : error}), 500)
 
 
 class Sku:
@@ -46,12 +63,11 @@ class ResquestHanlder(Transaction):
     def __init__(self):
         Transaction.__init__(self)
         self.shop_warehouse = self.pull_shop_warehouse()
-    
+
 
     def stock_product_to_shop(self, data_product: list) -> list:
         stock = []
         df_product = pd.DataFrame(data_product)
-        
         for shop in self.shops:
             concurrence = df_product[df_product["shop"].str.contains(shop)]
             print(len(concurrence))
@@ -63,22 +79,26 @@ class ResquestHanlder(Transaction):
     def pull_shop_warehouse(self) -> List[dict]:
         query = SETTINGS["queries"]["get_name_shops"]
         results = self.pull(query)
-        names = [row["name"]for row in results]
+        names = [row["name"]for row in results[1]]
         self.shops = names = set(names)
-        return results
+        return results[1]
 
 
     def pull_shops(self) -> json:
         query = SETTINGS["queries"]["get_shops"]
         results = self.pull(query)
-        return jsonify({"Response": results})
+        if results[0]:
+            return Responses.success_response(results[1])
+        return Responses.server_error_response(results[1])
 
 
     def pull_shop(self, name: str) -> json:
         query = SETTINGS["queries"]["get_shop"]
         query = query.format(name)
         results = self.pull(query)
-        return jsonify({"Response": results})
+        if results[0]:
+            return Responses.success_response(results[1])
+        return Responses.server_error_response(results[1])
     
 
     def insert_shop(self, payload: dict) -> json:
@@ -108,24 +128,26 @@ class ResquestHanlder(Transaction):
         results = self.insert(query, values)
         if results[0]:
             self.shop_warehouse.append({"name": payload["name"], "warehouse":payload["warehouse"]})
-            return jsonify({"Response":"New shop registered"})
-        return jsonify({"Response": results[1]})
+            return Responses.success_response("New shop registered")
+        return Responses.server_error_response(results[1])
     
 
     def pull_product(self, sku: str) -> json:
         query = SETTINGS["queries"]["get_product"]
         query = query = query.format(sku)
         results = self.pull(query)
-        if len(results) > 0:
-            stock = self.stock_product_to_shop(results)
-            return jsonify({"Response": {"Full stock": len(results),
-                                        "Stock by Shop": stock,
-                                        "Product":results},
-                                        })
+        if results[0]:
+            if len(results[1]):
+                stock = self.stock_product_to_shop(results[1])
+                return Responses.success_response({"Full stock": len(results[1]),
+                                                    "Stock by Shop": stock,
+                                                    "Product":results[1]})
+            else:
+                return Responses.success_response("SKU not exist")
         else:
-            return jsonify({"Response": "SKU not exist"})
+            return Responses.server_error_response(results[1])
 
-        
+
     def insert_product(self, payload: str) -> json:
         columns = []
         values = []
@@ -147,8 +169,9 @@ class ResquestHanlder(Transaction):
         query = query.format(columns)
         results = self.insert(query, values)
         if results[0]:
-            return jsonify({"Response": f"New product registered, SKU: {sku_result[1]}, Code Time: {code_time}" })
-        return jsonify({"Response": results[1]})
+            response = f"New product registered, SKU: {sku_result[1]}, Code Time: {code_time}"
+            return Responses.success_response(response)
+        return Responses.success_response(results[0])
 
     
     def update_product(self, code_time: str, payload: str) -> json:
@@ -164,5 +187,8 @@ class ResquestHanlder(Transaction):
         query = query.format(str_set[:-1], code_time)
         results = self.update(query)
         if results[0]:
-            return jsonify({"Response": "Product Updated"})
-        return jsonify({"Response": results[1]})
+            if results[1] > 0:
+                return Responses.success_response("Product Updated")
+            else:
+                return Responses.fail_response("No data updated-Product doesn't  exist")
+        return Responses.server_error_response(results[1])

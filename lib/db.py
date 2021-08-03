@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-
+from etc import SETTINGS
 import os
 import psycopg2
 from psycopg2 import pool
@@ -58,7 +58,6 @@ class CursorPool():
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         # Rollback if not everything is good
         if exc_val is not None:
-            
             self.connection.rollback()
         else:
             self._cursor.close()
