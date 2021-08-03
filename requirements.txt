@@ -2,3 +2,4 @@ Flask
 flask-restx
 PyYAML
 psycopg2
+pandas

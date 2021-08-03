@@ -1,14 +1,19 @@
+import calendar
 import operator
-import time
+import re
+import pandas as pd
+from datetime import datetime
+from threading import Timer
 from flask import json, jsonify
 from .db_transaction import Transaction
 from etc import SETTINGS
+from typing import List, Tuple, Any
 
 
 class Sku:
 
     @classmethod
-    def type_validation(cls, payload):
+    def type_validation(cls, payload: dict) -> Tuple[bool, Any]:
         if not payload["class"].upper() in SETTINGS["definition_type"]["product_class"]:
             return False, "product class not exists"
         if not payload["type"].upper()  in SETTINGS["definition_type"]["product_tags"].keys():
@@ -18,9 +23,8 @@ class Sku:
         return True, None
         
 
-
     @classmethod
-    def generate(cls, payload):
+    def generate(cls, payload: dict) -> Tuple[bool, Any]:
         validation = Sku.type_validation(payload)
         if validation[0]:
             sku = payload["class"] + SETTINGS["definition_type"]["product_tags"][payload["type"].upper()] + \
@@ -29,12 +33,40 @@ class Sku:
             return True, sku
         else:
             return validation
+    
+
+    @classmethod
+    def generate_code_time(cls, sku) -> str:
+        time_stamp = calendar.timegm(datetime.utcnow().timetuple())
+        return str(time_stamp) + sku
 
 
 class ResquestHanlder(Transaction):
-    def __init__(self) -> None:
+
+    def __init__(self):
         Transaction.__init__(self)
+        self.shop_warehouse = self.pull_shop_warehouse()
+    
+
+    def stock_product_to_shop(self, data_product: list) -> list:
+        stock = []
+        df_product = pd.DataFrame(data_product)
         
+        for shop in self.shops:
+            concurrence = df_product[df_product["shop"].str.contains(shop)]
+            print(len(concurrence))
+            if len(concurrence) > 0:
+                stock.append({shop:len(concurrence)})
+        return stock
+                
+    
+    def pull_shop_warehouse(self) -> List[dict]:
+        query = SETTINGS["queries"]["get_name_shops"]
+        results = self.pull(query)
+        names = [row["name"]for row in results]
+        self.shops = names = set(names)
+        return results
+
 
     def pull_shops(self) -> json:
         query = SETTINGS["queries"]["get_shops"]
@@ -42,16 +74,21 @@ class ResquestHanlder(Transaction):
         return jsonify({"Response": results})
 
 
-    def pull_shop(self, name) -> json:
+    def pull_shop(self, name: str) -> json:
         query = SETTINGS["queries"]["get_shop"]
         query = query.format(name)
         results = self.pull(query)
         return jsonify({"Response": results})
     
 
-    def insert_shop(self, payload) -> json:
+    def insert_shop(self, payload: dict) -> json:
         columns = []
         values = []
+
+        for key in self.shop_warehouse:
+            if key["name"] ==  payload["name"] and key["warehouse"] ==  payload["warehouse"]:
+                return jsonify({"Response":"Shop/warehouse already exist"})
+
         query = SETTINGS["queries"]["add_shop"]
         schedule = payload["opening_time"] + "am - " + \
         payload["closing_time"] + "pm"
@@ -70,37 +107,36 @@ class ResquestHanlder(Transaction):
         
         results = self.insert(query, values)
         if results[0]:
+            self.shop_warehouse.append({"name": payload["name"], "warehouse":payload["warehouse"]})
             return jsonify({"Response":"New shop registered"})
         return jsonify({"Response": results[1]})
     
 
-    def pull_product(self, sku) -> json:
+    def pull_product(self, sku: str) -> json:
         query = SETTINGS["queries"]["get_product"]
-        query_warehosue = SETTINGS["queries"]["get_shop_warehosue"]
         query = query = query.format(sku)
         results = self.pull(query)
         if len(results) > 0:
-            print(results[0])
-            query_warehosue = query_warehosue.format(results[0]["warehouse"], results[0]["shop"])
-            print(query_warehosue)
-            results2 = self.pull(query_warehosue)
-            return jsonify({"Response": {"stock": len(results),
-                                        "location": results2},
-                                        "first result": results[0]})
+            stock = self.stock_product_to_shop(results)
+            return jsonify({"Response": {"Full stock": len(results),
+                                        "Stock by Shop": stock,
+                                        "Product":results},
+                                        })
         else:
             return jsonify({"Response": "SKU not exist"})
 
         
-
-    def insert_product(self, payload):
+    def insert_product(self, payload: str) -> json:
         columns = []
         values = []
         query = SETTINGS["queries"]["add_product"]
-        
+
         sku_result = Sku.generate(payload)
         if not sku_result[0]:
             return jsonify({"Response": sku_result[1]})
         payload.update({"sku": sku_result[1]})
+        code_time = Sku.generate_code_time(sku_result[1])
+        payload.update({"idTime":code_time})
         payload_sorted = sorted(payload.items(), key=operator.itemgetter(0))
         for row in payload_sorted:
             columns.append(row[0])
@@ -109,11 +145,24 @@ class ResquestHanlder(Transaction):
                               .replace("[", "")\
                               .replace("]", "")
         query = query.format(columns)
-        print(query)
-        print(values)
         results = self.insert(query, values)
         if results[0]:
-            return jsonify({"Response": f"New product registered, SKU: {sku_result[1]}"})
+            return jsonify({"Response": f"New product registered, SKU: {sku_result[1]}, Code Time: {code_time}" })
         return jsonify({"Response": results[1]})
 
-        
+    
+    def update_product(self, code_time: str, payload: str) -> json:
+        columns = []
+        values = []
+        str_set = ""
+        if not code_time:
+            return jsonify({"Error": "pleases fill SKU to folloging up"})
+        query = SETTINGS["queries"]["update_product"]
+        payload_sorted = sorted(payload.items(), key=operator.itemgetter(0))
+        for row in payload_sorted:
+            str_set = str_set + " " + row[0] + f"='{row[1]}'" + ","
+        query = query.format(str_set[:-1], code_time)
+        results = self.update(query)
+        if results[0]:
+            return jsonify({"Response": "Product Updated"})
+        return jsonify({"Response": results[1]})

@@ -33,3 +33,17 @@ model_product = api.model('Product', {
                           'warehouse': fields.String(example="A1", required=True, description="To assing to an existing warehouse/store"),
                           'shop': fields.String(example="cargamosShop", required=True),
                           'extra': fields.String(example="memmory 4rm-128", required=True)})
+
+
+
+model_product_update = api.model('ProductUpdate', {
+                          'type': fields.String(example="Phone", required=False, description="Just existing types"),
+                          'model': fields.String(example="P30 Lite", required=False),
+                          'brand': fields.String(example="Huawei", required=False),
+                          'color': fields.String(example="black", required=False),
+                          'status': fields.String(example="true", required=False),
+                          'class': fields.String(example="EL", required=False, description="EL = Electronic etc.."),
+                          'warehouse': fields.String(example="A1", required=False, description="To assing to an existing warehouse/store"),
+                          'shop': fields.String(example="cargamosShop", required=False),
+                          'extra': fields.String(example="memmory 4rm-128", required=False)})
+

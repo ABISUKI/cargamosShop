@@ -8,16 +8,18 @@ queries:
             VALUES ((SELECT MAX(id)+1 FROM shops), %s, %s,%s, %s ,%s, %s, %s, %s);
   
   add_product: INSERT INTO products_el (id, {})
-               VALUES ((SELECT MAX(id)+1 FROM products_el), %s,%s, %s,%s, %s ,%s, %s, %s, %s, %s);
+               VALUES ((SELECT MAX(id)+1 FROM products_el), %s,%s, %s,%s, %s ,%s, %s, %s, %s, %s, %s);
   test: SELECT * FROM products_el;
   get_shop: SELECT name, address, city, country,state, phone, schedule, warehouse FROM shops WHERE name = '{}';
   get_shops: SELECT name, address, city, country,state, phone, schedule, warehouse FROM shops;
-  get_product: SELECT brand, class, color, extra, model, sku, status, type, shop, warehouse FROM products_el WHERE sku = '{}'
-  get_shop_warehosue: SELECT name, address, city, country,state, phone, schedule, warehouse FROM shops WHERE warehouse = '{}' AND name = '{}';
+  get_product: SELECT brand, class, color, extra, model, sku, status, type, shop, warehouse, idTime FROM products_el WHERE sku = '{}'
+  get_shop_warehosue: SELECT name, address, city, country,state, phone, schedule, warehouse FROM shops WHERE warehouse = '{}';
+  get_name_shops: SELECT name, warehouse FROM shops;
+  update_product:  UPDATE products_el SET {} WHERE idTime = '{}';
 
 definition_type:
   product_class:
-    - EL  #ELECTRONIC
+    - EL  #ELECTRONIc
     - SP  #SPORTS
     - FT  #FOOTWEAR
   product_tags: {"PHONE":"PHN", "TV":"TV", "HEADPHONES":"HDPS", "SNIKERS":"SNK", "BOOTS":"BTS"}
