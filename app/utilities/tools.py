@@ -137,19 +137,22 @@ class ResquestHanlder(Transaction):
     
 
     def pull_product(self, sku: str) -> json:
-        query = SETTINGS["queries"]["get_product"]
-        query = query.format(sku)
-        results = self.pull(query)
-        if results[0]:
-            if len(results[1]):
-                stock = self.stock_product_to_shop(results[1])
-                return Responses.success_response({"Full stock": len(results[1]),
-                                                    "Stock by Shop": stock,
-                                                    "Product":results[1]})
+        try:
+            query = SETTINGS["queries"]["get_product"]
+            query = query.format(sku)
+            results = self.pull(query)
+            if results[0]:
+                if len(results[1]):
+                    stock = self.stock_product_to_shop(results[1])
+                    return Responses.success_response({"Full stock": len(results[1]),
+                                                        "Stock by Shop": stock,
+                                                        "Product":results[1]})
+                else:
+                    return Responses.success_response("SKU not exist")
             else:
-                return Responses.success_response("SKU not exist")
-        else:
-            return Responses.server_error_response(results[1])
+                return Responses.server_error_response(results[1])
+        except Exception as e:
+            return Responses.server_error_response(str(e))
 
 
     def insert_product(self, payload: str) -> json:
