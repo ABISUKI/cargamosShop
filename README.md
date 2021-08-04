@@ -75,6 +75,28 @@ KeyError: 'POSTGRES_USER'
 
 
 ### Simple Iformación
+ Para agregar un nuevo porducto , el tipo de producto  y marca deberá estar registrado en el archivo de configuracion 
+ de otra manera la respuesta sería:
+ 
+ ```
+ {
+  "Response": "product type not exists"
+}
+
+  ```
+https://github.com/ABISUKI/cargamosShop/blob/main/etc/settings.yaml
+Esto con el fin de tener un control de SKU acorde con el ERP - WMS
+```
+ definition_type:
+  product_class:
+    - EL  #ELECTRONIc
+    - SP  #SPORTS
+    - FT  #FOOTWEAR
+  product_tags: {"PHONE":"PHN", "TV":"TV", "HEADPHONES":"HDPS", "SNIKERS":"SNK", "BOOTS":"BTS"}
+  brand_tags: {"SAMMSUNG": "SMS", "HUAWEI":"HWI", "ASUS":"AS", "NIKE":"NK", "ADIDAS": "ADS", "CATERPILLAR":"CTPLL"}
+
+  ```
+
 
 #### SKU Model
 ![SKU model](https://github.com/ABISUKI/cargamosShop/blob/main/diagrams/producto-sku.jpg)
