@@ -1,6 +1,8 @@
 # Flask REST API - cargamosShop 
 API Creada con Flask para simular un sistema de inventario (API)
 
+DB : postgresql
+
 
 # Guía de instalación
 ### Clonar repositorio
@@ -30,15 +32,15 @@ git clone https://github.com/ABISUKI/cargamosShop.git
   ```
 
 ### Variables de entorno
- Por el moento las variables secretas se deberan de agregar en el entorno virtual
- ve al siguiente archivos y añade las variables de entorno requeridas
+ Por el moento las variables secretas se deberan de agregar en el entorno virtual.
+ Añade las variables de entorno requeridas en el siguiente archivo
 
  ```
-  dbstart.sh
+  env-shop/bin/activate
   ```
   ```
-  export POSTGRES_USER=youser
-export POSTGRES_PWD=cargShop
+  export POSTGRES_USER=postgres
+export POSTGRES_PWD=
 export FLASK_HOST=0.0.0.0
 export FLASK_PORT=8080
 
@@ -55,3 +57,14 @@ cambiando contraseña:
  ```
   pytest -v
   ```
+### Problemas comunes
+```
+   raise KeyError(key) from None
+KeyError: 'POSTGRES_USER'
+
+  ```
+  Las variables de entorno son temporales , exportalas manualmente
+  o ve al archivo env-shop/bin/activate e añadelas permanetemente
+  así cada vez que se active el entorno se crearán automaticamente.
+
+
