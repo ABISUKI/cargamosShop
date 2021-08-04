@@ -3,6 +3,7 @@ API Creada con Flask para simular un sistema de inventario (API)
 
 DB : postgresql
 
+NOTA: procesamiento asyncrono aun no iplementado :(.
 
 # Guía de instalación
 ### Clonar repositorio
