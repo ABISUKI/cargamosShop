@@ -10,10 +10,10 @@ sudo -u postgres psql -c "CREATE TABLE shops(id serial primary key,
     phone varchar(30) NOT NULL,
     schedule varchar(30) NOT NULL,
     warehouse varchar(30) NOT NULL
-);"
+);" -d Cargamos_Inventory
 
 sudo -u postgres psql -c "INSERT INTO shops (id, name, address, city, country, state, phone, schedule, warehouse)
-VALUES ('1', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test');"
+VALUES ('1', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test');" -d Cargamos_Inventory
 
 sudo -u postgres psql -c "CREATE TABLE products_el(id serial primary key,
     type varchar(30) NOT NULL,
@@ -28,9 +28,10 @@ sudo -u postgres psql -c "CREATE TABLE products_el(id serial primary key,
     shop varchar(30) NOT NULL,
     idTime varchar NOT NULL,
     UNIQUE (idTime)
-);"
+);" -d Cargamos_Inventory
 
 sudo -u postgres psql -c "INSERT INTO products_el (id, type, model, brand, status, color, sku, class, warehouse, extra, shop, idTime)
-VALUES (1, 'test', 'test', 'test', 'true', 'test', 'test', 'test', 'test', 'test','test','test');"
+VALUES (1, 'test', 'test', 'test', 'true', 'test', 'test', 'test', 'test', 'test','test','test');" -d Cargamos_Inventory
+
 
 
