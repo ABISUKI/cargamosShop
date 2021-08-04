@@ -89,51 +89,59 @@ class ResquestHanlder(Transaction):
 
 
     def pull_shops(self) -> json:
-        query = SETTINGS["queries"]["get_shops"]
-        results = self.pull(query)
-        if results[0]:
-            return Responses.success_response(results[1])
-        return Responses.server_error_response(results[1])
+        try:
+            query = SETTINGS["queries"]["get_shops"]
+            results = self.pull(query)
+            if results[0]:
+                return Responses.success_response(results[1])
+            return Responses.server_error_response(results[1])
+        except Exception as e:
+            return Responses.server_error_response(str(e))
 
 
     def pull_shop(self, name: str) -> json:
-        query = SETTINGS["queries"]["get_shop"]
-        query = query.format(name)
-        results = self.pull(query)
-        if results[0]:
-            return Responses.success_response(results[1])
-        return Responses.server_error_response(results[1])
+        try:
+            query = SETTINGS["queries"]["get_shop"]
+            query = query.format(name)
+            results = self.pull(query)
+            if results[0]:
+                return Responses.success_response(results[1])
+            return Responses.server_error_response(results[1])
+        except Exception as e:
+            return Responses.server_error_response(str(e))
     
 
     def insert_shop(self, payload: dict) -> json:
         columns = []
         values = []
+        try:
+            for key in self.shop_warehouse:
+                if key["name"] ==  payload["name"] and key["warehouse"] ==  payload["warehouse"]:
+                    return jsonify({"Response":"Shop/warehouse already exist"})
 
-        for key in self.shop_warehouse:
-            if key["name"] ==  payload["name"] and key["warehouse"] ==  payload["warehouse"]:
-                return jsonify({"Response":"Shop/warehouse already exist"})
+            query = SETTINGS["queries"]["add_shop"]
+            schedule = payload["opening_time"] + "am - " + \
+            payload["closing_time"] + "pm"
+            payload.update({"schedule": schedule})
+            del payload["closing_time"]
+            del payload["opening_time"]
+            payload_sorted = sorted(payload.items(), key=operator.itemgetter(0))
+            for row in payload_sorted:
+                columns.append(row[0])
+                values.append(row[1])
 
-        query = SETTINGS["queries"]["add_shop"]
-        schedule = payload["opening_time"] + "am - " + \
-        payload["closing_time"] + "pm"
-        payload.update({"schedule": schedule})
-        del payload["closing_time"]
-        del payload["opening_time"]
-        payload_sorted = sorted(payload.items(), key=operator.itemgetter(0))
-        for row in payload_sorted:
-            columns.append(row[0])
-            values.append(row[1])
-
-        columns = str(columns).replace("'","")\
-                              .replace("[", "")\
-                              .replace("]", "")
-        query = query.format(columns)
-        
-        results = self.insert(query, values)
-        if results[0]:
-            self.shop_warehouse.append({"name": payload["name"], "warehouse":payload["warehouse"]})
-            return Responses.success_response("New shop registered")
-        return Responses.server_error_response(results[1])
+            columns = str(columns).replace("'","")\
+                                .replace("[", "")\
+                                .replace("]", "")
+            query = query.format(columns)
+            
+            results = self.insert(query, values)
+            if results[0]:
+                self.shop_warehouse.append({"name": payload["name"], "warehouse":payload["warehouse"]})
+                return Responses.success_response("New shop registered")
+            return Responses.server_error_response(results[1])
+        except Exception as e:
+            return Responses.server_error_response(str(e))
     
 
     def pull_product(self, sku: str) -> json:
@@ -159,43 +167,48 @@ class ResquestHanlder(Transaction):
         columns = []
         values = []
         query = SETTINGS["queries"]["add_product"]
-
-        sku_result = Sku.generate(payload)
-        if not sku_result[0]:
-            return jsonify({"Response": sku_result[1]})
-        payload.update({"sku": sku_result[1]})
-        code_time = Sku.generate_code_time(sku_result[1])
-        payload.update({"idTime":code_time})
-        payload_sorted = sorted(payload.items(), key=operator.itemgetter(0))
-        for row in payload_sorted:
-            columns.append(row[0])
-            values.append(row[1])
-        columns = str(columns).replace("'","")\
-                              .replace("[", "")\
-                              .replace("]", "")
-        query = query.format(columns)
-        results = self.insert(query, values)
-        if results[0]:
-            response = f"New product registered, SKU: {sku_result[1]}, Code Time: {code_time}"
-            return Responses.success_response(response)
-        return Responses.success_response(results[0])
+        try:
+            sku_result = Sku.generate(payload)
+            if not sku_result[0]:
+                return jsonify({"Response": sku_result[1]})
+            payload.update({"sku": sku_result[1]})
+            code_time = Sku.generate_code_time(sku_result[1])
+            payload.update({"idTime":code_time})
+            payload_sorted = sorted(payload.items(), key=operator.itemgetter(0))
+            for row in payload_sorted:
+                columns.append(row[0])
+                values.append(row[1])
+            columns = str(columns).replace("'","")\
+                                .replace("[", "")\
+                                .replace("]", "")
+            query = query.format(columns)
+            results = self.insert(query, values)
+            if results[0]:
+                response = f"New product registered, SKU: {sku_result[1]}, Code Time: {code_time}"
+                return Responses.success_response(response)
+            return Responses.success_response(results[0])
+        except Exception as e:
+            return Responses.server_error_response(str(e))
 
     
     def update_product(self, code_time: str, payload: str) -> json:
         columns = []
         values = []
         str_set = ""
-        if not code_time:
-            return jsonify({"Error": "pleases fill SKU to folloging up"})
-        query = SETTINGS["queries"]["update_product"]
-        payload_sorted = sorted(payload.items(), key=operator.itemgetter(0))
-        for row in payload_sorted:
-            str_set = str_set + " " + row[0] + f"='{row[1]}'" + ","
-        query = query.format(str_set[:-1], code_time)
-        results = self.update(query)
-        if results[0]:
-            if results[1] > 0:
-                return Responses.success_response("Product Updated")
-            else:
-                return Responses.fail_response("No data updated-Product doesn't  exist")
-        return Responses.server_error_response(results[1])
+        try:
+            if not code_time:
+                return jsonify({"Error": "pleases fill SKU to folloging up"})
+            query = SETTINGS["queries"]["update_product"]
+            payload_sorted = sorted(payload.items(), key=operator.itemgetter(0))
+            for row in payload_sorted:
+                str_set = str_set + " " + row[0] + f"='{row[1]}'" + ","
+            query = query.format(str_set[:-1], code_time)
+            results = self.update(query)
+            if results[0]:
+                if results[1] > 0:
+                    return Responses.success_response("Product Updated")
+                else:
+                    return Responses.fail_response("No data updated-Product doesn't  exist")
+            return Responses.server_error_response(results[1])
+        except Exception as e:
+            return Responses.server_error_response(str(e))
