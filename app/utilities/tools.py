@@ -79,9 +79,11 @@ class ResquestHanlder(Transaction):
     def pull_shop_warehouse(self) -> List[dict]:
         query = SETTINGS["queries"]["get_name_shops"]
         results = self.pull(query)
-        names = [row["name"]for row in results[1]]
-        self.shops = names = set(names)
-        return results[1]
+        if len(results[1]) > 0:
+            names = [row["name"]for row in results[1]]
+            self.shops = names = set(names)
+            return results[1]
+        return [{"no", "data"}]
 
 
     def pull_shops(self) -> json:
