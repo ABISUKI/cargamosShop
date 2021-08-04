@@ -42,4 +42,10 @@ export FLASK_HOST=0.0.0.0
 export FLASK_PORT=8080
 
   ```
+### cambiar contraseña
+login
+sudo -u postgres psql
+
+cambiando contraseña:
+\password
  
