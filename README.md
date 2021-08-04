@@ -58,6 +58,11 @@ cambiando contraseña:
  ```
   pytest -v
   ```
+### Ejecutar app (recuerda tener abierto tu entorno virtual)
+```
+  python run.py
+  ```
+
 ### Problemas comunes
 ```
    raise KeyError(key) from None
