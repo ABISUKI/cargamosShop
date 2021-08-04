@@ -82,7 +82,7 @@ class ResquestHanlder(Transaction):
         if results[0]:
             if len(results[1]) > 0:
                 names = [row["name"]for row in results[1]]
-                self.shops = names = set(names)
+                self.shops = set(names)
                 return results[1]
             return [{"no", "data"}]
         return [{"no", "data"}]
