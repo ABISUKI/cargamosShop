@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-f
-import os
 import asyncio
 from .services.api_setup import *
 from .utilities.tools import ResquestHanlder

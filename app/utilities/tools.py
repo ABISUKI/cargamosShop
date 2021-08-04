@@ -1,15 +1,17 @@
+# -*- coding: utf-8 -*-
+
+"""
+    FIle contains heavy logic to process the requets inventory.
+"""
+
 import calendar
 import operator
-import re
-import time
 import pandas as pd
+from typing import List, Tuple, Any
 from datetime import datetime
-from threading import Timer
 from flask import json, jsonify, make_response
-from werkzeug.wrappers import response
 from .db_transaction import Transaction
 from etc import SETTINGS
-from typing import List, Tuple, Any
 
 
 class Responses:

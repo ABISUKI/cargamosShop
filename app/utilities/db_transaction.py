@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+"""
+    Class to handle sql transactions methods.
+"""
+
 from psycopg2 import IntegrityError
 from lib.db import PostgresDB, CursorPool
 from etc import SETTINGS

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+"""
+    This files contains the application and swagger configurations.
+"""
 import json
 from flask import Flask, request, jsonify
 from flask_restx import Api, Resource, fields, namespace
@@ -7,7 +10,7 @@ from flask_restx import Api, Resource, fields, namespace
 
 app  = Flask(__name__)
 app.config['RESTX_VALIDATE'] = True
-api = Api(app, title="DEMO", description="description", default_label='Shop Invenotry', default="CargamosShop")
+api = Api(app, title="Cargamos", description="Inventory System", default_label='Inventory Tools', default="CargamosShop")
 
 
 model_shop = api.model('Shop', {
