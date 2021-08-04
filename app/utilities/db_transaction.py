@@ -19,7 +19,7 @@ class Transaction:
             return True, [dict(row) for row in data]
             
         except Exception as e:
-            False, str(e)
+            return False, str(e)
 
 
     def insert(self, query:str, values: list) -> Tuple[bool, str]:
@@ -30,7 +30,7 @@ class Transaction:
             return True, "New data registered"
 
         except (IntegrityError, Exception) as e:
-            print(e)
+            print
             if "duplicate key value violates" in str(e):
                 return False, "Shop/warehouse already exist"
             return False, str(e)
