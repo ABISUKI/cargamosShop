@@ -32,6 +32,7 @@ git clone https://github.com/ABISUKI/cargamosShop.git
 ### Variables de entorno
  Por el moento las variables secretas se deberan de agregar en el entorno virtual
  ve al siguiente archivos y añade las variables de entorno requeridas
+
  ```
   dbstart.sh
   ```
@@ -48,4 +49,9 @@ sudo -u postgres psql
 
 cambiando contraseña:
 \password
- 
+
+### Test (Pytest)
+ Dentro de la carpeta cargamosShop se ejcuta el siguiente comand.
+ ```
+  pytest -v
+  ```
