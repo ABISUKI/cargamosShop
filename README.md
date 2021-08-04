@@ -68,3 +68,16 @@ KeyError: 'POSTGRES_USER'
   así cada vez que se active el entorno se crearán automaticamente.
 
 
+### Simple Iformación
+
+#### SKU Model
+![SKU model](https://github.com/ABISUKI/cargamosShop/blob/main/diagrams/producto-sku.jpg)
+
+#### Shop Model
+![Shop model](https://github.com/ABISUKI/cargamosShop/blob/main/diagrams/shopModel.jpg)
+
+#### Product Model
+![Porduct model](https://github.com/ABISUKI/cargamosShop/blob/main/diagrams/productModel.jpg)
+
+#### Endpoints
+![endpoints](https://github.com/ABISUKI/cargamosShop/blob/main/diagrams/endpoints.jpg)
