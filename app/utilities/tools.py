@@ -153,6 +153,7 @@ class ResquestHanlder(Transaction):
             results = self.pull(query)
             if results[0]:
                 if len(results[1]):
+                    self.pull_shop_warehouse()
                     stock = self.stock_product_to_shop(results[1])
                     return Responses.success_response({"Full stock": len(results[1]),
                                                         "Stock by Shop": stock,
